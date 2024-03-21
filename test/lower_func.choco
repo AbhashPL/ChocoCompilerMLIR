@@ -1,0 +1,7 @@
+def foo(a, b){
+    var z = 0;
+    var c = a + b;
+    var d = c*2;
+    var e = a + d;
+    return e;
+}

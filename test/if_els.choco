@@ -1,0 +1,12 @@
+def foo(a, b,c) {
+    if(a>b) {
+        return a;
+    } else {
+        return b;
+    }
+
+    2*3;
+    return c;
+}
+
+foo(22,33,44);

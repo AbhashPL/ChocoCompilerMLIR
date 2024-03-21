@@ -1,0 +1,15 @@
+def foo(a, b) {
+    if(a>b) {
+        return a;
+    } else {
+        51;
+    }
+
+    if(22>33) {
+        return 999;
+    } else {
+        return 111;
+    }
+
+    return 0;
+}

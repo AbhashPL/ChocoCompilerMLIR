@@ -1,0 +1,9 @@
+
+def foo(a, b) {
+    if(a>b) {
+        var c = a+b;
+        return c;
+    } else {
+        b;
+    }
+}
