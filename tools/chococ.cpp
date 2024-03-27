@@ -43,7 +43,7 @@ void output_to_llfile(std::unique_ptr<llvm::Module> llvm_module)
 {
 
     std::error_code ec;
-    llvm::raw_fd_ostream file("example.ll", ec);
+    llvm::raw_fd_ostream file("../../output/example.ll", ec);
     
     if (ec) {
         llvm::errs() << "Error opening file: " << ec.message() << '\n';
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
         std::cout<<e<<std::endl;
     }
     std::cout<<std::endl;
-    
+
     std::cout << ast->String() << std::endl;
 
     std::cout << "Printing complete" << std::endl;
