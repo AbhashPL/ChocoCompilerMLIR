@@ -2,8 +2,10 @@
 def foo(a, b) {
     if(a>b) {
         var c = a+b;
-        return c;
+        return;
     } else {
         b;
     }
+
+    return;
 }

@@ -1,0 +1,4 @@
+def foo() {
+    var a = 2;
+    return;
+}

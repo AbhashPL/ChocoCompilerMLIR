@@ -113,6 +113,13 @@ namespace choco {
                 Token ret_token = curToken;
                 nextToken();
 
+                // i.e. no return value
+                if(curTokenIs(tok_semicolon)) {
+                    //nextToken();
+                    std::shared_ptr<ReturnStatement> stmt(new ReturnStatement(ret_token, nullptr));
+                    return stmt;
+                }
+
                 std::shared_ptr<Expression> return_value = parseExpression(LOWEST);
 
                 if (peekTokenIs(tok_semicolon))

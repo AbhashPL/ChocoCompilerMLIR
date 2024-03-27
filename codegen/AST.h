@@ -259,7 +259,7 @@ class CallExpression : public Expression {
                 str+=exp->String();
                 str+=", ";
             }
-            str+=")";
+            str+=");\n";
 
             return str;
         }

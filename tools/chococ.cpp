@@ -147,10 +147,17 @@ int main(int argc, char* argv[])
     Lexer l = Lexer(code);
 
     Parser p = Parser(l);
+
     std::shared_ptr<Program> ast = p.parseProgram();
 
     Program& prg = gatherPass(*ast);
 
+    std::cout<<"============ Parsing errors =============== "<<std::endl;
+    for(auto &e : p.getErrors()) {
+        std::cout<<e<<std::endl;
+    }
+    std::cout<<std::endl;
+    
     std::cout << ast->String() << std::endl;
 
     std::cout << "Printing complete" << std::endl;

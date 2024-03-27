@@ -1,0 +1,8 @@
+
+def foo() {
+var a=20;
+print(a);
+return;
+}
+
+foo();

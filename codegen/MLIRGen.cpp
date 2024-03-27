@@ -29,13 +29,29 @@ using namespace choco;
 class MLIRGen {
     public:
         MLIRGen(mlir::MLIRContext &context) 
-            : builder(&context) {} // the builder is intialized with the address of the context object
+            : builder(&context) {
+                
+                typeEnv["print"] = nullptr; // return type of print is null
+
+            } // the builder is intialized with the address of the context object
         
         mlir::ModuleOp mlirGen(Program& prg) {
             
             theModule = mlir::ModuleOp::create(builder.getUnknownLoc(), "my_module");
             builder.setInsertionPointToEnd(theModule.getBody());
             
+            // Add declaration for the print function in the runtime
+            std::vector<mlir::Type> print_args{builder.getI32Type()};
+
+            auto funcType = builder.getFunctionType(print_args, std::nullopt);
+
+            auto printFunc = mlir::func::FuncOp::create(builder.getUnknownLoc(), "print", funcType);
+            printFunc.setVisibility(mlir::SymbolTable::Visibility::Private);
+
+            theModule.push_back(printFunc);
+
+            builder.setInsertionPointToEnd(theModule.getBody());
+
             for(auto &st : prg.getStatements()) {
                 
                 switch(st->getKind()) {
@@ -169,8 +185,7 @@ class MLIRGen {
             {
                 vals.push_back(kv.second);
             }
-        
-            
+           
             mlir::FunctionType funcType;
 
             if(check_if_all_are_null(vals)) {
@@ -212,17 +227,6 @@ class MLIRGen {
             auto &retMap = fs.getReturnsMap();
 
             mlir::FunctionType funcType = createFuncType(fs.getName(), argTypes, retMap);
-
-            // if (fs.hasReturn())
-            // {
-            //     // UI32 return type
-            //     funcType = builder.getFunctionType(argTypes, builder.getI32Type());
-            // }
-            // else {
-            //     // no return type
-            //     funcType = builder.getFunctionType(argTypes, std::nullopt);
-            // }
-
             
             auto func = builder.create<mlir::func::FuncOp>(location, fs.getName(), funcType);
 
@@ -242,7 +246,7 @@ class MLIRGen {
 
             std::shared_ptr<BlockStatement> body = fs.getBody();
 
-            // delete code after an if..else stmt, if the then and else branches both have returns inz
+            // delete code after an if..else stmt, if the then and else branches both have returns in them
             // This code could to moved to ASTPasses.h
             auto &original_stmts = body->getStatements();
             std::vector<std::shared_ptr<Statement>>::iterator it = original_stmts.begin();
@@ -270,7 +274,7 @@ class MLIRGen {
                         ++it;
                         continue;
                     }
-                    
+
                 } else {
                     ++it;
                 }
@@ -494,7 +498,6 @@ class MLIRGen {
             } else {
                 builder.create<ReturnOp>(builder.getUnknownLoc());
             }
-
             
             return myFunction;
         }
@@ -690,6 +693,10 @@ class MLIRGen {
         mlir::Value mlirGen(CallExpression& cExp) {
             
             std::string callee = cExp.getCallee();
+            //TODO: check if the following function is present for calling
+
+
+
             std::vector<mlir::Value> operands;
 
             for(auto &expr : cExp.getArgs()) {
@@ -700,10 +707,28 @@ class MLIRGen {
 
                 operands.push_back(arg);
             }
+
+            //TODO: if the function being called is a 'print', then make sure that it has only one operand and that too of type int32
+            if(callee == "print") {
+                if(operands.size() > 1) {
+                    std::cout<<"print takes in only one argument if type integer"<<std::endl;
+                    exit(0);
+                }
+            }
+
             auto ret_type = getFuncType(callee);
 
-            auto callop = builder.create<mlir::func::CallOp>(builder.getUnknownLoc(), ret_type, callee, operands);
-            return callop.getResult(0);
+            mlir::func::CallOp callop;
+
+            if(ret_type) {
+                callop = builder.create<mlir::func::CallOp>(builder.getUnknownLoc(), ret_type, callee, operands);
+                return callop.getResult(0);
+            } else {
+                callop = builder.create<mlir::func::CallOp>(builder.getUnknownLoc(), std::nullopt, callee, operands);
+                return nullptr;
+            }
+
+            
         }
 
         mlir::Value mlirGen(std::shared_ptr<Expression> exp) {
