@@ -102,6 +102,14 @@ class Identifier : public Expression {
             return IdentifierExp;
         }
 
+        void setToken(Token tok) {
+            this->token = tok;
+        }
+
+        void setName(std::string newName) {
+            this->name = newName;
+        }
+
     private:
         Token token;
         std::string name;
@@ -262,6 +270,11 @@ class CallExpression : public Expression {
             str+=");\n";
 
             return str;
+        }
+
+        void setIdent(std::shared_ptr<Identifier> newIdent)
+        {   
+            this->ident = std::move(newIdent);
         }
 
         void expressionNode() override {}
@@ -505,8 +518,12 @@ class Function : public Statement {
         std::string getName() {
             return name.value;
         }
+
+        void setNameToken(Token newName) {
+            this->name = newName;
+        }
         
-        std::vector<std::shared_ptr<Identifier>> getParams() {
+        std::vector<std::shared_ptr<Identifier>> &getParams() {
             return params;
         }
 
@@ -638,6 +655,11 @@ class VarDeclStatement : public Statement {
         Kind getKind()
         {
             return VarDeclStmt;
+        }
+
+        void setIdent(std::shared_ptr<Identifier> newName)
+        {
+            this->name = std::move(newName);
         }
 
         void statementNode() override {}

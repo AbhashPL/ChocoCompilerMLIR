@@ -219,7 +219,7 @@ class MLIRGen {
             auto location = builder.getUnknownLoc();
             int num_params = fs.getParams().size();
             std::vector<mlir::Type> argTypes;
-            std::vector<std::shared_ptr<Identifier>> params = fs.getParams();
+            std::vector<std::shared_ptr<Identifier>> &params = fs.getParams();
             getType(params, argTypes); // this will fill the vec with types
             
             fs.gatherReturns(fs.getBody()); // this will collect the mapping of returns
@@ -433,7 +433,7 @@ class MLIRGen {
             
             int num_params = fs.getParams().size();
             std::vector<mlir::Type> argTypes;
-            std::vector<std::shared_ptr<Identifier>> params = fs.getParams();
+            std::vector<std::shared_ptr<Identifier>> &params = fs.getParams();
             getType(params, argTypes); // this will fill the vec with types
 
             
